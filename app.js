@@ -1,22 +1,28 @@
-const dotenv = require('dotenv')
-const connectDB = require('./config/db')
-const userRoutes = require('./routes/userRoutes')
-const errorHandler = require('./middleware/errorHandler')
+const dotenv = require("dotenv");
+const connectDB = require("./config/db");
+const express = require("express");
+const errorHandler = require("./middleware/errorHandler");
+const userRoutes = require('./routes/userRoutes'); 
+const cors = require('cors');
 
-dotenv.config()
+dotenv.config();
 
-const app = express()
+const app = express();
 
-connectDB()
+app.use(cors({ origin: process.env.ALLOWED_ORIGIN || '*' }));
+app.use(express.json()); 
 
-app.use('/api/users', userRoutes)
+connectDB();
 
-app.use(express.json())
+app.use("/api/users", userRoutes);
 
-app.use(errorHandler)
+app.get("/", (req, res) => {
+  res.send("API is running..."); 
+});
 
-const PORT = process.env.PORT || 5000
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
-  // TYPO and unsanitized log
-  console.log('Server runing at PORT -->', PORT)
-})
+  console.log(`Server running at PORT ${PORT}`);
+});
